@@ -1,48 +1,75 @@
 import * as React from 'react';
-import { SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import ModalMessage from '../components/ModalMessage';
+import BackButton from '../components/BackButton';
+
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const schema = z.object({
+  email: z.string().min(1, 'E-mail é obrigatório').email('E-mail inválido'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+});
+
+type FormData = z.infer<typeof schema>;
 
 const LoginScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navigation?: any }) => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const { control, handleSubmit } = useForm<FormData>({ resolver: zodResolver(schema) });
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalMessage, setModalMessage] = React.useState('');
 
-  const handleLogin = () => {
-    // placeholder: chamar API / contexto de autenticação
+  const onSubmit = (data: FormData) => {
+    // TODO: autenticação real aqui
     navigation?.navigate?.('Dashboard');
   };
 
+  const onError = (errors: any) => {
+    const first = errors && Object.values(errors)[0];
+    setModalMessage(first?.message ?? 'Verifique os campos');
+    setModalVisible(true);
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-white p-6">
-      <View className="mt-12">
-        <Text className="text-2xl font-bold text-blue-600 mb-2">Entrar</Text>
-        <Text className="text-gray-600 mb-6">Use seu e-mail e senha para acessar a conta.</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.inner}>
+        <Text style={styles.title}>Entrar</Text>
+        <Text style={styles.subtitle}>Use seu e-mail e senha para acessar a conta.</Text>
 
-        <Text className="text-sm text-gray-700 mb-1">E-mail</Text>
-        <TextInput
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          className="border border-gray-200 rounded-md px-3 py-2 mb-4"
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <Input label="E-mail" value={value} onChangeText={onChange} keyboardType="email-address" autoCapitalize="none" />
+          )}
         />
 
-        <Text className="text-sm text-gray-700 mb-1">Senha</Text>
-        <TextInput
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          className="border border-gray-200 rounded-md px-3 py-2 mb-6"
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => <Input label="Senha" value={value} onChangeText={onChange} secureTextEntry />}
         />
 
-        <TouchableOpacity className="w-full bg-blue-600 py-3 rounded-lg items-center mb-3" onPress={handleLogin}>
-          <Text className="text-white font-semibold">Entrar</Text>
-        </TouchableOpacity>
+        <Button title="Entrar" onPress={handleSubmit(onSubmit, onError)} style={styles.mb3} />
 
-        <TouchableOpacity className="w-full border border-gray-200 py-3 rounded-lg items-center" onPress={() => navigation?.navigate?.('SignUp')}>
-          <Text className="text-blue-600">Criar uma conta</Text>
-        </TouchableOpacity>
+        <Button title="Criar uma conta" variant="outline" onPress={() => navigation?.navigate?.('SignUp')} />
       </View>
+
+      <ModalMessage visible={modalVisible} title="Erro" message={modalMessage} onClose={() => setModalVisible(false)} />
+      <BackButton onPress={() => navigation?.goBack?.()} style={styles.back} />
     </SafeAreaView>
   );
 };
 
 export default LoginScreen;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F3F4F6', padding: 24 },
+  inner: { marginTop: 48 },
+  title: { fontSize: 28, fontWeight: '800', color: '#0F172A', marginBottom: 8 },
+  subtitle: { color: '#475569', marginBottom: 24 },
+  mb3: { marginBottom: 12 },
+  back: { position: 'absolute', top: 18, left: 18 },
+});

@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import Button from '../components/Button';
+import Card from '../components/Card';
 
 const EmergencyScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navigation?: any }) => {
   const handleCall = () => {
@@ -8,19 +10,24 @@ const EmergencyScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navig
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white p-6 items-center justify-center">
-      <Text className="text-2xl font-bold text-red-600 mb-4">Emergência</Text>
-      <Text className="text-center text-gray-600 mb-8">Aperte para acionar os contatos ou serviços de emergência.</Text>
+    <SafeAreaView style={styles.container}>
+      <Card style={styles.card}>
+        <Text style={styles.title}>Emergência</Text>
+        <Text style={styles.subtitle}>Aperte para acionar os contatos ou serviços de emergência.</Text>
 
-      <TouchableOpacity className="w-full bg-red-600 py-4 rounded-lg items-center mb-4" onPress={handleCall}>
-        <Text className="text-white font-semibold">Acionar Emergência</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity className="w-full border border-gray-200 py-3 rounded-lg items-center" onPress={() => navigation?.goBack?.()}>
-        <Text className="text-blue-600">Voltar</Text>
-      </TouchableOpacity>
+        <Button title="Acionar Emergência" variant="danger" onPress={handleCall} style={styles.mb3} />
+        <Button title="Voltar" variant="outline" onPress={() => navigation?.goBack?.()} />
+      </Card>
     </SafeAreaView>
   );
 };
 
 export default EmergencyScreen;
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F3F4F6', padding: 24, alignItems: 'center', justifyContent: 'center' },
+  card: { width: '100%', maxWidth: 420 },
+  title: { fontSize: 22, fontWeight: '800', color: '#0F172A', marginBottom: 8 },
+  subtitle: { color: '#475569', marginBottom: 16 },
+  mb3: { marginBottom: 12 },
+});
