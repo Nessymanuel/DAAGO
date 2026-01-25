@@ -4,6 +4,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import ModalMessage from '../components/ModalMessage';
 import BackButton from '../components/BackButton';
+import { useAuth } from '../store/AuthContext';
 
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,8 +22,15 @@ const LoginScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navigatio
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalMessage, setModalMessage] = React.useState('');
 
-  const onSubmit = (data: FormData) => {
-    // TODO: autenticação real aqui
+  const auth = useAuth();
+
+  const onSubmit = async (data: FormData) => {
+    const res = await auth.signIn(data.email, data.password);
+    if (!res.ok) {
+      setModalMessage(res.message ?? 'Erro ao autenticar');
+      setModalVisible(true);
+      return;
+    }
     navigation?.navigate?.('Dashboard');
   };
 
