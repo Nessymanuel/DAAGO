@@ -14,7 +14,9 @@ export default function ModalMessage({ visible, title = 'Atenção', message = '
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={styles.message}>
+            {typeof message === 'string' && message.trim() !== '' ? message : '!!input inválido'}
+            </Text>
 
           <TouchableOpacity style={styles.button} onPress={onClose}>
             <Text style={styles.buttonText}>Fechar</Text>
@@ -46,6 +48,6 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 18, fontWeight: '700', marginBottom: 8, color: '#0F172A' },
   message: { color: '#374151', marginBottom: 16 },
-  button: { backgroundColor: '#06D6A0', paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
+  button: { alignItems: 'center', marginBottom: 12, backgroundColor: '#2563EB', paddingVertical: 16, borderRadius: 10  },
   buttonText: { color: '#fff', fontWeight: '700' },
 });

@@ -10,7 +10,7 @@ export default function OnboardingScreen({ navigation }: Props) {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.title}>
-          Oi 👋{"\n"}Bem-vindo ao DAAGO
+          Oi 👋{"\n"}Bem-vindo ao Sinistra
         </Text>
 
         <Text style={styles.subtitle}>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import { useEffect, useState } from 'react';
@@ -23,19 +23,23 @@ const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navig
   const auth = useAuth();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
+    <KeyboardAvoidingView style={{flex:1,backgroundColor:'#F3F4F6'}} behavior={Platform.OS==='ios'?'padding':undefined}>
+      <ScrollView contentContainerStyle={{padding:24,flexGrow:1,justifyContent:'center'}} keyboardShouldPersistTaps="handled">
         <View style={styles.inner}>
-          <Text style={styles.greeting}>Bom dia, {auth.user?.name ?? 'Usuário'}</Text>
+          <Text style={styles.greeting}>
+            Bom dia, <Text style={{color:"#2563EB"}}> {auth.user?.name
+              ? auth.user.name.charAt(0).toUpperCase() + auth.user.name.slice(1)
+              : 'Usuário'}</Text>
+          </Text>
 
           <Card style={styles.heroCard}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.heroTitle}>Comunicar Novo Acidente</Text>
                 <Text style={styles.heroSubtitle}>Iniciar um novo relatório de sinistro</Text>
-                <Button title="Começar" onPress={() => navigation?.navigate?.('ClaimForm')} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
+                <Button title="Registrar Sinistro" onPress={() => navigation?.navigate?.('ClaimForm')} textStyle={{fontSize:14}} style={{ marginTop: 8, backgroundColor: '#2563EB', paddingVertical: 16, borderRadius: 10, alignSelf: 'flex-start' }} />
               </View>
-              <Image source={require('../assets/splash-icon.png')} style={styles.heroImage} />
+              <Image source={require('../assets/Sinistro.jpg')} style={styles.heroImage} />
             </View>
           </Card>
 
@@ -67,16 +71,16 @@ const DashboardScreen: React.FC<{ navigation?: any }> = ({ navigation }: { navig
                 <TouchableOpacity key={c.id} style={styles.claimItem} onPress={() => navigation?.navigate?.('ClaimDetail', { claim: c })}>
                   <View>
                     <Text style={styles.claimTitle}>{c.title}</Text>
-                    <Text style={styles.claimMeta}>{c.date} • {c.status}</Text>
+                    <Text style={styles.claimMeta}>{c.date} • <Text style={styles.claimStatus}>{c.status.charAt(0).toUpperCase() + c.status.slice(1)}</Text></Text>
                   </View>
                 </TouchableOpacity>
               ))
             )}
-            <Button title="Atualizar" variant="outline" onPress={load} style={{ marginTop: 8 }} />
+            <Button title="Atualizar" variant="outline" onPress={load} style={{ marginTop: 8 ,}} textStyle={styles.atualizarButtonText} />
           </Card>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+        </KeyboardAvoidingView>
   );
 };
 
@@ -85,7 +89,7 @@ export default DashboardScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F3F4F6', padding: 24 },
   inner: { marginTop: 24 },
-  greeting: { fontSize: 22, fontWeight: '800', color: '#0F172A', marginBottom: 12 },
+  greeting: { fontSize: 22, fontWeight: '800', color: '#0F172A', marginBottom: 30,marginTop:30 },
   title: { fontSize: 20, fontWeight: '700', color: '#0F172A', marginBottom: 6 },
   subtitle: { color: '#475569', marginBottom: 16 },
   cardTitle: { fontWeight: '700', color: '#111827', marginBottom: 8 },
@@ -96,9 +100,11 @@ const styles = StyleSheet.create({
   heroCard: { paddingVertical: 16, paddingHorizontal: 12 },
   heroTitle: { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   heroSubtitle: { color: '#64748B', marginTop: 6 },
-  heroImage: { width: 96, height: 96, marginLeft: 12, resizeMode: 'contain' },
+  heroImage: { width: 96, height: 96, marginLeft: 12, resizeMode: 'contain' , borderRadius:20},
   grid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 12, justifyContent: 'space-between' },
   smallCard: { width: '48%', backgroundColor: '#fff', padding: 12, borderRadius: 10, marginBottom: 8 },
   smallTitle: { fontWeight: '700', color: '#0F172A', marginBottom: 6 },
   smallSub: { color: '#64748B' },
+  atualizarButtonText: { color: '#2563EB' },
+  claimStatus: { color: '#05b887' },
 });
